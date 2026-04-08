@@ -15,7 +15,7 @@ const body = Manrope({
 });
 
 export const metadata = {
-  title: "Capolavoro Edu",
+  title: "Capolavoro Unica",
   description: "Educational platform with secure authentication and personal notes."
 };
 
