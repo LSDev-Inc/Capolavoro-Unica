@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { getAuthUser } from "@/lib/session";
 import { sanitizeUser, attachAuthCookie } from "@/lib/auth";
 import { createSecurityResetToken, getAppUrl } from "@/lib/security";
@@ -8,7 +9,7 @@ import { sendSecurityEmail, sendAccountNotice, resolveLocale } from "@/lib/email
 export const runtime = "nodejs";
 
 function generateTwoFaCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 export async function PATCH(req) {

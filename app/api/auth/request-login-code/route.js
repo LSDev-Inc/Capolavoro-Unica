@@ -4,13 +4,13 @@ import crypto from "crypto";
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
 import { normalizeEmail, isValidEmail } from "@/lib/validators";
-import { sendVerificationEmail, resolveLocale } from "@/lib/email";
+import { sendLoginCodeEmail, resolveLocale } from "@/lib/email";
 
 export const runtime = "nodejs";
 
-const VERIFY_MINUTES = 10;
+const CODE_MINUTES = 10;
 
-function generateVerificationCode() {
+function generateLoginCode() {
   return crypto.randomInt(100000, 1000000).toString();
 }
 
@@ -29,19 +29,34 @@ export async function POST(req) {
 
   await dbConnect();
   const user = await User.findOne({ email });
-  if (!user || user.emailVerified) {
+  if (!user) {
     return NextResponse.json({ sent: true });
   }
 
-  const code = generateVerificationCode();
+  if (!user.emailVerified) {
+    return NextResponse.json({ error: "Email not verified." }, { status: 403 });
+  }
+
+  if (user.is2FAEnabled) {
+    return NextResponse.json({ error: "2FA enabled. Use standard login." }, { status: 409 });
+  }
+
+  if (user.emailLoginLockedUntil && user.emailLoginLockedUntil > new Date()) {
+    return NextResponse.json({ error: "Login code locked. Try again later." }, { status: 423 });
+  }
+
+  const code = generateLoginCode();
   const hashedCode = await bcrypt.hash(code, 10);
-  user.emailVerificationCode = hashedCode;
-  user.emailVerificationExpires = new Date(Date.now() + VERIFY_MINUTES * 60 * 1000);
+  user.emailLoginCodeHash = hashedCode;
+  user.emailLoginExpires = new Date(Date.now() + CODE_MINUTES * 60 * 1000);
+  user.emailLoginAttempts = 0;
+  user.emailLoginLockedUntil = null;
   await user.save();
 
   const locale = resolveLocale(req.headers.get("accept-language") || "");
-  const mailResult = await sendVerificationEmail({ to: user.email, code, locale });
-  if (!mailResult.sent) {
+  try {
+    await sendLoginCodeEmail({ to: user.email, code, locale });
+  } catch (error) {
     return NextResponse.json({ error: "Email service not configured." }, { status: 500 });
   }
 

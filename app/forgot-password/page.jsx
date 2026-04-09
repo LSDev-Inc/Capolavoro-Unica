@@ -1,45 +1,34 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useLanguage } from "@/components/LanguageProvider";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const { t, translateError } = useLanguage();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    setStatus("");
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email })
       });
 
       const data = await res.json();
       if (!res.ok) {
         setError(translateError(data.error) || t("common.genericError"));
-      } else if (data.requiresEmailVerification) {
-        window.sessionStorage.setItem("verifyEmail", email);
-        router.push("/verify-email");
-      } else if (data.requires2FA) {
-        if (data.twoFactorCode) {
-          window.sessionStorage.setItem("twofaCode", data.twoFactorCode);
-        }
-        router.push("/verify-2fa");
       } else {
-        window.sessionStorage.removeItem("twofaCode");
-        router.push("/dashboard");
+        setStatus(t("forgot.sent"));
       }
     } catch (err) {
       setError(t("common.genericError"));
@@ -55,8 +44,8 @@ export default function LoginPage() {
           <LanguageToggle />
         </div>
         <div className="glass w-full rounded-3xl p-8 shadow-soft fade-up">
-        <h1 className="font-display text-3xl text-white">{t("login.title")}</h1>
-        <p className="mt-2 text-sm text-muted">{t("login.subtitle")}</p>
+        <h1 className="font-display text-3xl text-white">{t("forgot.title")}</h1>
+        <p className="mt-2 text-sm text-muted">{t("forgot.subtitle")}</p>
 
         <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
           <label className="text-sm text-muted">
@@ -69,43 +58,18 @@ export default function LoginPage() {
               required
             />
           </label>
-          <label className="text-sm text-muted">
-            {t("common.password")}
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-white/30"
-              required
-            />
-          </label>
 
           {error && <p className="text-sm text-red-300">{error}</p>}
+          {status && <p className="text-sm text-emerald-300">{status}</p>}
 
           <button
             type="submit"
             disabled={loading}
             className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:translate-y-[-1px] disabled:opacity-60"
           >
-            {loading ? t("login.buttonLoading") : t("login.button")}
+            {loading ? t("forgot.buttonLoading") : t("forgot.button")}
           </button>
         </form>
-
-        <div className="mt-4 flex flex-col gap-2 text-sm text-muted">
-          <Link href="/forgot-password" className="text-white underline">
-            {t("login.forgot")}
-          </Link>
-          <Link href="/login-email" className="text-white underline">
-            {t("login.emailCode")}
-          </Link>
-        </div>
-
-        <p className="mt-6 text-sm text-muted">
-          {t("login.noAccount")} {" "}
-          <Link href="/register" className="text-white underline">
-            {t("login.create")}
-          </Link>
-        </p>
         </div>
       </div>
     </main>

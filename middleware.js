@@ -22,7 +22,10 @@ export async function middleware(req) {
   const isAuthPage =
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
-    pathname.startsWith("/verify-email");
+    pathname.startsWith("/verify-email") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/login-email");
   const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/settings");
   const isVerifyPage = pathname.startsWith("/verify-2fa");
 
@@ -70,6 +73,9 @@ export const config = {
     "/login",
     "/register",
     "/verify-2fa",
-    "/verify-email"
+    "/verify-email",
+    "/forgot-password",
+    "/reset-password",
+    "/login-email"
   ]
 };

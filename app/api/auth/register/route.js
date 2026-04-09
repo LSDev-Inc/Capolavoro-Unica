@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
 import {
@@ -22,7 +23,7 @@ export const runtime = "nodejs";
 const VERIFY_MINUTES = 10;
 
 function generateVerificationCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 export async function POST(req) {

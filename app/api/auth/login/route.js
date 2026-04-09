@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
 import { normalizeEmail, isValidEmail, isValidPassword } from "@/lib/validators";
@@ -22,11 +23,11 @@ const LOCK_MINUTES = 30;
 const VERIFY_MINUTES = 10;
 
 function generateTwoFaCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 function generateVerificationCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 export async function POST(req) {
