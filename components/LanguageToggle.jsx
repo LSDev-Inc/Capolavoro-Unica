@@ -16,5 +16,6 @@ export default function LanguageToggle({ className = "" }) {
     >
       {label}
     </button>
+    
   );
 }

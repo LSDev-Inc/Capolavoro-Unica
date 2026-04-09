@@ -98,7 +98,7 @@ export default function RegisterPage() {
 
         <p className="mt-6 text-sm text-muted">
           {t("register.already")} {" "}
-          <Link href="/login" className="text-white underline">
+          <Link href="/login" className="text-white underline hover:no-underline hover:text-green-400">
             {t("register.login")}
           </Link>
         </p>

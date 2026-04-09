@@ -92,17 +92,17 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-4 flex flex-col gap-2 text-sm text-muted">
-          <Link href="/forgot-password" className="text-white underline">
+          <Link href="/forgot-password" className="text-white underline hover:no-underline hover:text-red-400">
             {t("login.forgot")}
           </Link>
-          <Link href="/login-email" className="text-white underline">
+          <Link href="/login-email" className="text-white underline hover:no-underline hover:text-red-400">
             {t("login.emailCode")}
           </Link>
         </div>
 
         <p className="mt-6 text-sm text-muted">
           {t("login.noAccount")} {" "}
-          <Link href="/register" className="text-white underline">
+          <Link href="/register" className="text-white underline hover:no-underline hover:text-green-400">
             {t("login.create")}
           </Link>
         </p>
