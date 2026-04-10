@@ -4,7 +4,11 @@ import crypto from "crypto";
 import { dbConnect } from "@/lib/db";
 import User from "@/models/User";
 import { normalizeEmail, isValidEmail } from "@/lib/validators";
-import { sendLoginCodeEmail, resolveLocale } from "@/lib/email";
+import {
+  getEmailErrorResponse,
+  sendLoginCodeEmail,
+  resolveLocale
+} from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -57,7 +61,16 @@ export async function POST(req) {
   try {
     await sendLoginCodeEmail({ to: user.email, code, locale });
   } catch (error) {
-    return NextResponse.json({ error: "Email service not configured." }, { status: 500 });
+    console.error("[auth/request-login-code] email failed", {
+      email: user.email,
+      message: error?.message
+    });
+    user.emailLoginCodeHash = null;
+    user.emailLoginExpires = null;
+    user.emailLoginAttempts = 0;
+    await user.save();
+    const emailError = getEmailErrorResponse(error);
+    return NextResponse.json({ error: emailError.error }, { status: emailError.status });
   }
 
   return NextResponse.json({ sent: true });

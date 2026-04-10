@@ -53,7 +53,10 @@ export async function PATCH(req) {
       meta: { actionUrl: resetUrl }
     });
   } catch (error) {
-    // Ignore email failures
+    console.error("[user/password] notice email failed", {
+      email: user.email,
+      message: error?.message
+    });
   }
 
   const response = NextResponse.json({ message: "Password updated." });

@@ -220,11 +220,11 @@ export default function DashboardPage() {
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value)}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white outline-none"
+                className="rounded-full border border-white/30 bg-white px-5 py-2 text-sm font-medium text-black outline-none transition focus:border-white/60"
               >
-                <option value="newest">{t("dashboard.sortNewest")}</option>
-                <option value="oldest">{t("dashboard.sortOldest")}</option>
-                <option value="title">{t("dashboard.sortTitle")}</option>
+                <option className="bg-white text-black" value="newest">{t("dashboard.sortNewest")}</option>
+                <option className="bg-white text-black" value="oldest">{t("dashboard.sortOldest")}</option>
+                <option className="bg-white text-black" value="title">{t("dashboard.sortTitle")}</option>
               </select>
             </div>
 

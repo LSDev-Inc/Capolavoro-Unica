@@ -371,6 +371,10 @@ const errorTranslations = {
     it: "Servizio email non configurato.",
     en: "Email service not configured."
   },
+  "Unable to send email.": {
+    it: "Impossibile inviare l'email.",
+    en: "Unable to send email."
+  },
   "2FA locked. Try again later.": {
     it: "2FA bloccata. Riprova piu' tardi.",
     en: "2FA locked. Try again later."

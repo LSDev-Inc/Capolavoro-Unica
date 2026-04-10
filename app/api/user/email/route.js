@@ -59,7 +59,11 @@ export async function PATCH(req) {
       });
     }
   } catch (error) {
-    // Ignore email failures
+    console.error("[user/email] notice email failed", {
+      email,
+      oldEmail,
+      message: error?.message
+    });
   }
 
   const response = NextResponse.json({ user: sanitizeUser(user) });

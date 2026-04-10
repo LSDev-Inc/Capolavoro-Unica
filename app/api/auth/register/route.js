@@ -16,7 +16,11 @@ import {
   getCookieOptions,
   sanitizeUser
 } from "@/lib/auth";
-import { sendVerificationEmail, resolveLocale } from "@/lib/email";
+import {
+  getEmailErrorResponse,
+  sendVerificationEmail,
+  resolveLocale
+} from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -81,10 +85,16 @@ export async function POST(req) {
   });
 
   const locale = resolveLocale(req.headers.get("accept-language") || "");
-  const mailResult = await sendVerificationEmail({ to: user.email, code, locale });
-  if (!mailResult.sent) {
+  try {
+    await sendVerificationEmail({ to: user.email, code, locale });
+  } catch (error) {
+    console.error("[auth/register] verification email failed", {
+      email: user.email,
+      message: error?.message
+    });
     await User.deleteOne({ _id: user._id });
-    return NextResponse.json({ error: "Email service not configured." }, { status: 500 });
+    const emailError = getEmailErrorResponse(error);
+    return NextResponse.json({ error: emailError.error }, { status: emailError.status });
   }
 
   const response = NextResponse.json({ requiresEmailVerification: true });

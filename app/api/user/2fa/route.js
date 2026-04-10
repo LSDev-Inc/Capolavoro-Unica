@@ -49,7 +49,10 @@ export async function PATCH(req) {
     try {
       await sendSecurityEmail({ to: user.email, resetUrl, locale });
     } catch (error) {
-      // Ignore email failures to avoid blocking 2FA enable.
+      console.error("[user/2fa] enable email failed", {
+        email: user.email,
+        message: error?.message
+      });
     }
   } else {
     user.is2FAEnabled = false;
@@ -63,7 +66,10 @@ export async function PATCH(req) {
     try {
       await sendAccountNotice({ to: user.email, type: "twofa_disabled", locale });
     } catch (error) {
-      // Ignore email failures
+      console.error("[user/2fa] disable notice failed", {
+        email: user.email,
+        message: error?.message
+      });
     }
   }
 
